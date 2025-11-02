@@ -1,0 +1,16 @@
+@page "/apps"
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Azure Apps</PageTitle>
+
+<h1>This will be a hyper link to lots of azure things</h1>
+
+<button @onclick="NavigateToCosmo">Cosmo</button>
+
+@code {
+
+    private void NavigateToCosmo(){
+        NavigationManager.NavigateTo("/Cosmo");
+    }
+}
