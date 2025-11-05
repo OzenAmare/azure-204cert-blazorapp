@@ -1,5 +1,11 @@
+@using Azure.Core
+@using Azure.Identity
+@using Azure.ResourceManager.CosmosDB
+@using Azure.ResourceManager
+@using Microsoft.Azure.Cosmos
 @page "/cosmo"
 @rendermode InteractiveServer
+@inject Microsoft.Azure.Cosmos.CosmosClient _cosmosClient
 
 <PageTitle>Cosmo DB</PageTitle>
 
@@ -7,10 +13,25 @@
 
 <h1>hit the apps page to go back</h1>
 
+<button @onclick="() => CreateItem(item, partitionKey: myNewItem)">Create the thing</button>
 
 @code {
 
-    
+    private string myNewItem = "string";
+    private string item = "customerId"; 
+
+    DefaultAzureCredential cred = new DefaultAzureCredential();
+
+    public async Task CreateItem<T>(T item, string partitionKey){
+        Container container = _cosmosClient.GetContainer("first-database", "first-container");
+        await container.CreateItemAsync(item,new PartitionKey(partitionKey));
+    }
+
+
+
+
 
 
 }
+
+

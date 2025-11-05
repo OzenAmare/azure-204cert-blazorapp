@@ -2,12 +2,14 @@ using BlazorApp.Components;
 using Serilog;
 using Azure.Identity;
 using Azure.Core;
-using Microsoft.Azure.Cosmos; 
+using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Options;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-var key = builder.Configuration["Cosmos:Key"];
+
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -28,14 +30,16 @@ builder.Services.AddSingleton<TokenCredential>(sp =>
     return new DefaultAzureCredential();
 });
 
+
+builder.Services.Configure<CosmosDbSettings>(
+    builder.Configuration.GetSection("ConnectionsStrings:CosmosDb")
+);
+
 builder.Services.AddSingleton(sp =>
 {
-    var endpoint = "https://blazorexperimentcosmos.documents.azure.com:443/";
+    var settings = sp.GetRequiredService<IOptions<CosmosDbSettings>>().Value;
 
-    var key = "key";
-
-    return new CosmosClient(endpoint, key);
-
+    return new CosmosClient(settings.Uri, settings.Key);
 });
 var app = builder.Build();   
 
